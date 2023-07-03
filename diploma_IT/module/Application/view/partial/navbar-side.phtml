@@ -1,0 +1,144 @@
+<?php
+/**
+ * Layout --- Side Navbar
+ * chophel@athang.com
+ */
+?>
+<?php 
+	$getRoute = $this->getroute_helper()->getMatchedRouteName();
+	$getAction = $this->getroute_helper()->getParam('action');
+	$arr = explode('/', $getRoute);
+	$getRoute = $arr[0];
+	$getResource = $this->getresource_helper($getRoute);
+?>	
+<div id="sidebar" class="sidebar sidebar-fixed expandable sidebar-light">
+	<div class="sidebar-inner">
+		<div class="ace-scroll flex-grow-1" data-ace-scroll="{}">
+			<div class="sidebar-section my-2">
+				<!-- the shortcut buttons -->
+				<div class="sidebar-section-item fadeable-left">
+					<div class="fadeinable sidebar-shortcuts-mini">
+						<!-- show this small buttons when collapsed -->
+						<span class="btn btn-success p-0 opacity-1"></span>
+						<span class="btn btn-info p-0 opacity-1"></span>
+						<span class="btn btn-orange p-0 opacity-1"></span>
+						<span class="btn btn-danger p-0 opacity-1"></span>
+					</div>
+
+					<div class="fadeable">
+						<!-- show this small buttons when not collapsed -->
+						<div class="sub-arrow"></div>
+						<div>
+							<button class="btn px-25 py-2 text-95 btn-success opacity-1">
+								<i class="fa fa-signal f-n-hover"></i>
+							</button>
+
+							<button class="btn px-25 py-2 text-95 btn-info opacity-1">
+								<i class="fa fa-edit f-n-hover"></i>
+							</button>
+
+							<button class="btn px-25 py-2 text-95 btn-orange opacity-1">
+								<i class="fa fa-users f-n-hover"></i>
+							</button>
+
+							<button class="btn px-25 py-2 text-95 btn-danger opacity-1">
+								<i class="fa fa-cogs f-n-hover"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+				<!-- the search box -->
+				<div class="sidebar-section-item">
+					<i class="fadeinable fa fa-search text-info-m1 mr-n1"></i>
+
+					<div class="fadeable d-inline-flex align-items-center ml-3 ml-lg-0">
+						<i class="fa fa-search mr-n3 text-info-m1"></i>
+						<input type="text" class="sidebar-search-input pl-4 pr-3 mr-n2" maxlength="60" placeholder="Search ..." aria-label="Search" />
+					</div>
+				</div>
+			</div>
+
+			<ul class="nav has-active-border active-on-right">
+				<?php if($this->menu_helper()!==null): foreach ( $this->menu_helper() as $key=>$menu): ?>
+					<?php  extract($menu); ?>
+					<?php if ( !is_array($menuItems) ): $route = ($route=='home')?'application':$route;?>
+						<li class="nav-item <?php echo ($getRoute == $route)?'active':'';?>">
+							<a href="<?php echo $this->url($route, array('action' => $action)); ?>" class="nav-link">
+								<i class="nav-icon <?php echo $icon; ?>"></i>
+								<span class="nav-text fadeable">
+									<span><?php echo $menu; ?></span>
+								</span>
+							</a>
+							<b class="sub-arrow"></b>
+						</li>
+					<?php else: ?>
+						<?php $condition = ($getResource == $this->getresource_helper($route));?>
+						<li class="nav-item <?php echo ($condition)?'active open':'';?>">
+							<a href="<?php echo $this->url($route, array('action' => $action)); ?>" class="nav-link dropdown-toggle collapsed">
+								<i class="nav-icon <?php echo $icon; ?>"></i>
+								<span class="nav-text fadeable">
+									<span><?php echo $menu; ?></span>
+								</span>
+								<b class="caret fa fa-angle-left rt-n90"></b>
+							</a>
+							<div class="hideable submenu collapse <?php echo ($condition)?'show':'';?>">
+								<ul class="submenu-inner">
+									<?php foreach ($menuItems as $key=>$menuitem): ?>
+										<?php extract($menuitem); ?>		                     
+										<?php if(!is_array($submenuItems)):?>
+										<?php 
+											$condition1 = ($getResource == $this->getresource_helper($route));
+											$condition2 = ($getRoute == $route);
+										?>
+											<li class="nav-item <?php echo ($condition1 && $condition2)?'active':'';?>">
+												<a href="<?php echo $this->url($route); ?>" class="nav-link">
+													<span class="nav-text">
+														<span><?php echo $menu; ?></span>
+													</span>
+												</a>
+											</li>
+										<?php else: ?>
+											<?php 
+												$condition1 = ($getResource == $this->getresource_helper($route));
+												$condition2 = ($getRoute == $route);
+											?>
+											<li class="nav-item <?php echo ($condition1 && $condition2)?'active open':'';?>">
+												<a href="#" class="nav-link dropdown-toggle collapsed">
+													<span class="nav-text">
+														<span><?php echo $menu; ?></span>
+													</span>
+													<b class="caret fa fa-angle-left rt-n90"></b>
+												</a>
+												<div class=" submenu collapse <?php echo ($condition1 && $condition2)?'show':'';?>">
+													<ul class="submenu-inner">
+													<?php foreach ($submenuItems as $submenuItem):?>
+														<?php 
+															$condition1 = ($getResource == $this->getresource_helper($route));
+															$condition2 = ($getRoute == $route);
+															$condition3 = ($getAction == $submenuItem['action']);
+														?>
+														<li class="nav-item <?php echo ($condition1 && $condition2 && $condition3)?'active':'';?>"> 
+															<a href="<?php echo $this->url($route, array('action' => $submenuItem['action'])); ?>" class="nav-link">
+																<span class="nav-text">
+																	<span><?php echo $submenuItem['menu']; ?></span>
+																</span>
+															</a>
+														</li>
+													<?php endforeach;?>
+													</ul>
+												</div>
+												<b class="sub-arrow"></b>
+												<!-- /.nav-second-level -->
+											</li>
+										<?php endif; ?>   
+									<?php endforeach;?>  
+								</ul>
+							</div>
+							<b class="sub-arrow"></b>
+						</li>
+					<?php endif; ?>				
+				<?php endforeach; endif;?>
+			</ul>
+		</div><!-- /.sidebar scroll -->
+	</div>
+</div>
